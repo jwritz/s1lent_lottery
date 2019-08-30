@@ -15,6 +15,7 @@
 
 ## Download & Installation
 * Download the latest [release](https://github.com/jwritz/s1lent_lottery/releases)
+* Rename folder to `s1lent_lottery` and place it in your resources folder
 * Add the following to your `server.cfg`:
 ```
 start s1lent_lottery
