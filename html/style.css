@@ -1,0 +1,120 @@
+body {
+    background: none;
+}
+
+button { 
+    background-color: lightgray;
+    border: black;
+    border-width: 2px;
+    color: black;
+    padding: 12px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 4px;
+    
+}
+
+.selectBtn {
+    border-radius: 32px;
+}
+
+.selectedButton {
+    background-color: green;
+    border: black;
+    color: white;
+    padding: 12px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 4px;
+    border-radius: 32px;
+}
+
+#container {
+    background-color: rgb(196, 255, 188);
+    margin: 10% auto;
+    /* width: 40%; */
+    width: 400px;
+    height: 500px;
+    border-style: solid;
+    border-color: black;
+    border-width: 1px;
+}
+
+#lotteryTitle {
+    padding-left: 25px;
+    /* float: left; */
+}
+
+#lottoNumbers {
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 10px;
+}
+
+#buy {
+    float: right;
+    padding-right: 15px;
+}
+
+#close {
+    float: right;
+    padding: 7px 10px;
+    margin-right: 5%;
+    background-color: rgb(214, 0, 43);
+    border-radius: 50%;
+    text-anchor: middle;
+    text-align: center;
+}
+
+#mainPage {
+    text-align: center;
+    margin-top: 15%;
+    position: relative;
+    height:70%;
+}
+
+#mainTable{
+    margin:auto;
+    border-collapse: collapse;
+}
+
+#mainTable td {
+    padding: 10px;
+}
+
+#numberContainer {
+    overflow-y: scroll;
+    max-height: 250px;
+    /* word-wrap: normal; */
+}
+
+#numberContainer.smallCount::-webkit-scrollbar{
+    display:none;
+}
+
+.numberDisplay {
+    width:1rem;
+    height:1rem;
+    display: inline-block;
+    margin:10px;
+    padding: 5px;
+    font-weight: 500;
+    border: 1px solid black;
+    border-radius: 50%;
+}
+
+.numberDisplay:hover{
+    background-color: lightgray;
+    cursor: pointer;
+}
+
+.selectedNumber{
+    background-color: gray;
+}
+/* #mainTable tr:nth-child(even){
+
+} */

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel = "stylesheet" href = "style.css" type = "text/css">
+        <script src = "nui://game/ui/jquery.js" type = "text/javascript"></script>
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    </head>
+    <body>
+        <div id="container">
+            <div style="width:100%;">
+                <h1 id="lotteryTitle">LS Lottery<button id="close" onclick="closeLottery()">X</button></h1>
+            
+            </div>
+
+            <div id="mainPage">
+                <table id="mainTable">
+                    <tr>
+                        <td>
+                            <label for="lotterySelect">Lottery</label>
+                        </td>
+                        <td>
+                            <select name="lotterySelect" id="lotterySelect">
+                                <!-- Zero base indices -->
+                            </select>
+                        </td>
+                        <td>
+                            <button class="selectBtn" onclick="toggleLottery()">Select</button>
+                        </td>
+                    </tr>
+                    <!-- <tr>
+                        <td>
+                            <label for="scratchOffSelect">Scratch Off</label>
+                        </td>
+                        <td>
+                            <select name="scratchOffSelect" id="scratchOffSelect">
+                                <option value="1">Ticket 1</option>
+                                <option value="2">Ticket 2</option>
+                            </select>
+                        </td>
+                        <td>
+                            <button class="selectBtn" onclick="">Select</button>
+                        </td>
+                    </tr> -->
+                </table>
+                <div id="bottomBar" style="width: 100%; position: absolute; bottom:1rem;">
+                    <button style="float:right;margin-right:10%;" onclick="redeemTickets()">Redeem</button>
+                </div>
+            </div>
+
+            <div id="lotteryPage" style="text-align: center; display: none;">
+                <h2 id="lotteryPageName">
+                    Lottery Name
+                </h2>
+                <div id="lotteryInfo">Date/Time: <span id="lotteryPageDateTime"></span><br>Cost: $<span id="lotteryPageCost"></span><br>Choose <span id="lotteryPageNum"></span> numbers. </div>
+
+                <div id="numberContainer">
+                    
+                </div>
+                <div>
+                    <button style="float: left; margin-left: 10%;" onclick="showHome()">Back</button>
+                    <button style="float: right; margin-right: 10%;" onclick="buy()">
+                        Buy
+                    </button>
+                </div>
+            </div>
+
+            <div id="scratchOffPage">
+
+            </div>
+
+        </div>
+    <script src = "./script.js" type = "text/javascript"></script>
+    </body>
+</html>
