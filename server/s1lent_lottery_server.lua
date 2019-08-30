@@ -78,7 +78,7 @@ function verifyDrawTime(index, drawTime)
 		end 
 	end
 	--Check prizePercents FIX
-	if drawTime.prizePercents == nil or (not type(drawTime.prizePercents) == "number") then--or Config.LotteryPrizes[drawTime.prizePercents] == nil or Config.LotteryPrizes[drawTime.prizePercents] ~= drawTime.numNumbers then
+	if (drawTime.prizePercents == nil) or (not type(drawTime.prizePercents) == "number") or (Config.LotteryPrizes[drawTime.prizePercents] == nil) or (not Config.LotteryPrizes[drawTime.prizePercents] == drawTime.numNumbers) then
 		reason = reason .. "prizePercents "
 		isValid = false
 	end
