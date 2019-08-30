@@ -49,7 +49,7 @@ To customize lotteries and prizes go to `s1lent_lottery_config.lua` and look at 
   * drawTimeHr : Hour that the lottery will be held (in 24 hour format)
   * drawTimeMin : Minute that the lottery will be held 
   * ticketCost : Cost of each ticket
-  * prize : Must be amt, may be utilized in future update
+  * prize : Must be `amt`, may be utilized in future update
   * value : Prize value for the grand prize (100%)
   * range : Range of numbers players will be able to choose from {lowestValue, highestValue} (optional)
   * numNumbers : Number of numbers players must choose when purchasing a ticket (optional)
