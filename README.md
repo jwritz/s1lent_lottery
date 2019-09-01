@@ -70,7 +70,7 @@ Example LotteryPrizes Percents:
 ```
 [1] = {5, 10, 25, 35, 100}
 ```
-* Explaination: These values are the percentage of the value for the lottery drawing that matching a certain amount of numbers gets
+* Explanation: These values are the percentage of the value for the lottery drawing that matching a certain amount of numbers gets
   * In the example: If players match 1 number, they get 5% of the value for the lottery, if they match all 5 numbers they get 100% of the value for the lottery
   * **There must be the same number of percents as there are numNumbers for the lottery drawing**
 * To add a new LotteryPrizes Percent:
@@ -78,3 +78,9 @@ Example LotteryPrizes Percents:
   * Change the index number (in []) to the last index + 1, or a number that is not already in use
   * Use the index value as your `prizePercents`
   * **There must be the same number of percents as there are numNumbers for the lottery drawing**
+## Errors
+* `<VDT01>` The drawing at the index listed (#) has an error in `s1lent_lottery_config.lua`. The value that the error occurs in is listed after "is INVALID"
+* `<CD01>` The drawing listed is not in the database. Each drawing must be in the database for the first drawing.
+* `<GND01>` The drawing listed is not in the database. Each drawing must be in the database for the first drawing.
+* `<GDU01>` The drawing listed is in the database, but not in the config.
+* For other errors or issues please report them in the [Error Section](https://github.com/jwritz/s1lent_lottery/issues)
