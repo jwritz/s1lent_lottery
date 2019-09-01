@@ -17,7 +17,7 @@ TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
 
 -- **Server-Side Drawing and Timing** --
 function printErrorInvalid(drawNum, reason)
-	print("[s1lent_lottery]: Lottery Drawing #" .. drawNum .. " is INVALID (" .. reason .. ")")
+	print("[s1lent_lottery] <VDT01> Lottery Drawing #" .. drawNum .. " is INVALID (" .. reason .. ")")
 end
 
 function verifyDrawTime(index, drawTime)
@@ -316,17 +316,7 @@ function checkDatabase() --Checks database to ensure all lotteries in config are
 					end
 				end
 				if not exists then
-					local id, date = getNextDrawingInfo(drawing.uniqueID)
-					
-					if id ~= nil and date ~= nil then
-						MySQL.Async.execute('INSERT INTO lottery_drawings (uniqueID, id, date) VALUES (@uniqueID, @id, @date)', 
-						{
-							['@uniqueID'] = drawing.uniqueID,
-							['@id'] = id,
-							['@date'] = date
-						}, 
-						function(rowsChanged) end)					
-					end
+					print("[s1lent_lottery] <CD01> You must create the first draw entry in the database for " .. drawing.uniqueID)
 				end
 			end
 		end)
@@ -394,7 +384,7 @@ function getNextDrawingInfo(uniqueID)
 				id =  1 + results[1]['id']
 				date = results[1]['date']
 			else
-				print("[s1lent_lottery] You must create the first draw entry in the database for " .. uniqueID)
+				print("[s1lent_lottery] <GND01> You must create the first draw entry in the database for " .. uniqueID)
 				error = true
 			end
 		end)
@@ -410,7 +400,7 @@ function getNextDrawingInfo(uniqueID)
 	
 	local drawing = getDrawingFromUniqueID(uniqueID)
 	if drawing == nil then
-		print("[s1lent_lottery]: Error fetching drawing with uniqueID: " .. uniqueID .. ", ensure all drawings in database are in config, or are removed from database")
+		print("[s1lent_lottery] <GDU01> Error fetching drawing with uniqueID: " .. uniqueID .. ", ensure all drawings in database are in config, or are removed from database")
 	end
 
 	local daysToAdd
@@ -543,7 +533,7 @@ end
 function init()
 	loadDrawTimes() --Load all from Config
 	sortDrawings() --Sort drawings in time-based order
-	--checkDatabase()
+	checkDatabase()
 
 	readyToStart = true
 end
