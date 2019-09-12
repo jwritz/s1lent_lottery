@@ -26,3 +26,4 @@ start s1lent_lottery
   * Monday Lotto: Date of next monday where 18:00 will occur (may be current day if before 18:00)
   * Friday Lotto: Date of next friday where 18:00 will occur (may be current day if before 18:00)
 * See [Customization](https://github.com/jwritz/s1lent_lottery/wiki/Customization) to learn how to customize and create lottery drawings
+* See [Errors](https://github.com/jwritz/s1lent_lottery/wiki/Errors) for help with errors
