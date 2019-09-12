@@ -8,7 +8,8 @@
 ## Usage
 * Go to the LS Lottery Office in the city to purchase tickets for the available lotteries
 * Once the lottery has been drawn, return to the LS Lottery Office to redeem your tickets
-* For custom lottery drawings, see [Customization](#customization)
+* For custom lottery drawings, see [Customization](https://github.com/jwritz/s1lent_lottery/wiki/Customization)
+* Look at the [Wiki Page](https://github.com/jwritz/s1lent_lottery/wiki) for full information
 
 ## Requirements
 * [es_extended](https://github.com/ESX-Org/es_extended)
