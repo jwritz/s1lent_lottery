@@ -8,10 +8,19 @@ var lotteryNumbers = [];
 var currentLotteryDisplayed = [];
 
 var lotteries = [];
+var ticketList = [];
 
 $(function()
 {   
     setAllVisible(false);
+
+    $('#prizeBtn').mouseenter(function(){
+        showPrizes();
+    });
+
+    $('#prizeBtn').mouseleave(function(){
+        hidePrizes();
+    });
 
     window.addEventListener('message', function(event)
     {
@@ -28,6 +37,9 @@ $(function()
                 setMainVisible(false);
                 reset();
             }
+        } else if (item.type && item.type == "getTicketList") {
+            ticketList = item.ticketList 
+            updateTicketTable();
         }
     });
 });
@@ -42,6 +54,10 @@ function redeemTickets() {
     closeLottery();
 }
 
+function updateTickets() {
+    $.post('http://s1lent_lottery/s1lent_lottery:getTicketList', JSON.stringify({}));
+}
+
 function buy() {
     if (lotteryNumbers.length < currentLotteryDisplayed[6]){
         // display error message
@@ -50,7 +66,6 @@ function buy() {
             $('#lotteryInfo').html("You have to choose "+maxNumbers+" number.");
         }else{
             $('#lotteryInfo').html("You have to choose "+maxNumbers+" numbers.");
-
         }
 
         setTimeout(function(){
@@ -66,7 +81,9 @@ function buy() {
         uniqueID: currentLotteryDisplayed[1],
         id: currentLotteryDisplayed[2],
         price: currentLotteryDisplayed[5],
-        pickedNums: lotteryNumbers
+        pickedNums: lotteryNumbers,
+        date: currentLotteryDisplayed[4],
+        time: currentLotteryDisplayed[3]
     }));
 }
 
@@ -91,18 +108,25 @@ function setLottoNumbersVisible(bool) {
     }
 }
 
-var lotteryDisplay = $('#lotteryPage');
 var mainDisplay = $('#mainPage');
+var lotteryDisplay = $('#lotteryPage');
+var myTicketsDisplay = $('#myTicketsPage');
 
 function reset(){
     showHome();
     lotteryNumbers = [];
     currentLotteryDisplayed = [];
     lotteries = []
+    ticketList = []
     var container = document.getElementById("lotterySelect");
     while (container.firstChild) {
         container.removeChild(container.firstChild);
     }
+    var container = document.getElementById("myTicketTable");
+    while (container.firstChild) {
+        container.removeChild(container.firstChild);
+    }
+    $('#myTicketTable').append("<tr><th style='width:75px;'>Drawing</th><th>Date</th><th>Time</th><th>My Numbers</th><th>Prize</th></tr>");
 }
 
 function toggleLottery(){
@@ -123,6 +147,8 @@ function showLottery(){
     $('#lotteryPageCost').html(currentLotteryDisplayed[5]);
     $('#lotteryPageNum').html(currentLotteryDisplayed[6]);
 
+    addPrizes();
+
     lotteryDisplay.show();
     mainDisplay.hide();
 }
@@ -132,6 +158,8 @@ function hideLottery(){
     while (container.firstChild) {
         container.removeChild(container.firstChild);
     }
+    hidePrizes();
+    clearPrizes();
     lotteryDisplay.hide();
     currentLotteryDisplayed = null;
     lotteryNumbers = []
@@ -139,6 +167,7 @@ function hideLottery(){
 
 function showHome(){
     hideLottery();
+    hideMyTickets();
     mainDisplay.show();
 }
 
@@ -193,4 +222,67 @@ function selectNumber(number){
     lotteryNumbers.sort();
 
     //console.log(lotteryNumbers); //debug
+}
+
+function showPrizes(){
+    // $('#prizes').show();
+    $('#prizeList').show();
+
+}
+
+function hidePrizes(){
+    // $('#prizes').hide();
+    $('#prizeList').hide();
+}
+
+function addPrizes(){
+    var prizeArray = currentLotteryDisplayed[9];
+    var count = prizeArray.length;
+    var prizeElement = $('#prizes');
+    for (var i = 0; i < count; i++){
+        if(i == 0){
+            prizeElement.append("<div><div class='prize'>"+(i+1)+" Match:</div>$"+prizeArray[i]+"</div>");
+        }else {
+            prizeElement.append("<div><div class='prize'>"+(i+1)+" Matches:</div>$"+prizeArray[i]+"</div>");
+        }
+    }
+}
+
+function clearPrizes(){
+    $('#prizes').html("");
+}
+
+function showMyTickets(){
+    updateTickets();
+    myTicketsDisplay.show();
+    mainDisplay.hide();
+}
+
+function hideMyTickets(){
+    myTicketsDisplay.hide();
+    
+    var container = document.getElementById("myTicketTable");
+    while (container.firstChild) {
+        container.removeChild(container.firstChild);
+    }
+    $('#myTicketTable').append("<tr><th style='width:75px;'>Drawing</th><th>Date</th><th>Time</th><th>My Numbers</th><th>Prize</th></tr>");
+}
+
+function updateTicketTable(){
+    var ticketTable = $('#myTicketTable');
+    var count = ticketList.length;
+    for (var i = 0; i < count; i++){
+        var drawingName = ticketList[i][0];
+        var drawDate = ticketList[i][1];
+        var drawTime = ticketList[i][2];
+        var pickedNumbers = ticketList[i][3];
+        var ticketPrize = ticketList[i][4];
+        var rowColor = "#c4ffbc";
+        if (ticketPrize == ""){
+            rowColor = "#a5c89e";
+        }
+
+        ticketTable.append("<tr style='background-color:"+rowColor+"'><td>"+drawingName+"</td><td>"+drawDate+"</td><td>"+drawTime+"</td><td>"+pickedNumbers+"</td><td>"+ticketPrize+"</td></tr>");
+    }
+
 }

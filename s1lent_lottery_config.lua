@@ -1,4 +1,4 @@
---VERSION: 1.0.1
+--VERSION: 1.0.2
 --GITHUB: https://github.com/jwritz/s1lent_lottery
 Config = {}
 Config.Locale = 'en'
@@ -26,11 +26,8 @@ Config.LotteryPrizes = {
 	[2] = {25, 100}
 }
 
-Config.lotteries = {--See GitHub readme for more information on creating lotteries
+Config.lotteries = {--See GitHub Wiki for more information on creating lotteries
 	{name = "Daily Lotto", uniqueID ="daily_lotto" , frequency = "daily", drawTimeHr = 12, drawTimeMin = 00, ticketCost = 10, prize = "amt", value = 100, range = {0, 10}, numNumbers = 2, prizePercents = 2},
 	{name = "Monday Lotto", uniqueID ="monday_lotto" , frequency = "mon", drawTimeHr = 18, drawTimeMin = 00, ticketCost = 100, prize = "amt", value = 1500, prizePercents = 1}, 
 	{name = "Friday Lotto", uniqueID ="friday_lotto" , frequency = "fri", drawTimeHr = 18, drawTimeMin = 00, ticketCost = 100, prize = "amt", value = 1500, prizePercents = 1}
 }
---Config.scratchOffs = {
-	--COMING SOON
---}

@@ -36,7 +36,6 @@ button {
 #container {
     background-color: rgb(196, 255, 188);
     margin: 10% auto;
-    /* width: 40%; */
     width: 400px;
     height: 500px;
     border-style: solid;
@@ -46,7 +45,6 @@ button {
 
 #lotteryTitle {
     padding-left: 25px;
-    /* float: left; */
 }
 
 #lottoNumbers {
@@ -77,9 +75,14 @@ button {
     height:70%;
 }
 
-#mainTable{
+#mainTable, #myTicketTable{
     margin:auto;
     border-collapse: collapse;
+}
+
+#myTicketTable td{
+    border-top: 1px solid black;
+    padding:5px;
 }
 
 #mainTable td {
@@ -89,7 +92,6 @@ button {
 #numberContainer {
     overflow-y: scroll;
     max-height: 250px;
-    /* word-wrap: normal; */
 }
 
 #numberContainer.smallCount::-webkit-scrollbar{
@@ -114,6 +116,32 @@ button {
 
 .selectedNumber{
     background-color: gray;
+}
+
+#prizeList {
+    position:absolute;
+    width:200px;
+    top:20px; 
+    left:50px;
+    z-index:10;
+    background-color:lightgray;
+    padding:10px;
+    border-radius:5px;
+    box-shadow: 2px 2px 2px gray;
+    display:none;
+}
+
+#prizes div:not(:last-child){
+    border-bottom:1px solid black; 
+    margin-bottom:5px;
+    padding-bottom:5px;
+}
+
+.prize{
+    display:inline-block;
+    width: 100px; 
+    padding-right:5px;
+    text-align:left;
 }
 /* #mainTable tr:nth-child(even){
 

@@ -177,6 +177,8 @@ function checkDrawings(index, hr, m) --index - sun = 1, mon = 2 ... sat = 7
 			insertDrawing(drawing.uniqueID, nextID, nextDate)
 			updateTickets(drawing, nextID - 1, nums)
 
+			announceDrawing(drawing.name)
+
 			if i > lastDraw then
 				lastDraw = i
 			end
@@ -417,6 +419,16 @@ function getNextDrawingInfo(uniqueID)
 	return id, date
 end
 
+function announceDrawing(drawingName)
+	local announcement = drawingName .. " was just drawn. Come down to the LS Lottery Office to see if you won!"
+
+	TriggerEvent("chat:message", {
+		color = {28, 176, 33},
+		multiline = true,
+		args = {"LS Lottery", announcement}
+	})
+end
+
 ESX.RegisterServerCallback('s1lent_lottery:getLotteryList', function(source, cb)
 	MySQL.ready(function()
 		MySQL.Async.fetchAll('SELECT * FROM lottery_drawings WHERE numbers IS NULL', {}, 
@@ -456,6 +468,11 @@ ESX.RegisterServerCallback('s1lent_lottery:getLotteryList', function(source, cb)
 
 				lotteryList[i][8] = range[1]
 				lotteryList[i][9] = range[2]
+
+				lotteryList[i][10] = {}
+				for j = 1, numNumbers, 1 do
+					lotteryList[i][10][j] = drawing.value * (Config.LotteryPrizes[drawing.prizePercents][j]/100)
+				end
 			end
 			cb(lotteryList)
 		end)
@@ -465,7 +482,7 @@ end)
 -- **Server-Side Purchase Tickets**
 
 RegisterServerEvent("s1lent_lottery:purchaseTicket")
-AddEventHandler("s1lent_lottery:purchaseTicket", function(uniqueID, id, price, pickedNums)
+AddEventHandler("s1lent_lottery:purchaseTicket", function(uniqueID, id, price, pickedNums, date, time)
 	local src = source
 	local xPlayer = ESX.GetPlayerFromId(src)
 	--local balance = xPlayer.getAccount('bank').money --Bank
@@ -473,21 +490,23 @@ AddEventHandler("s1lent_lottery:purchaseTicket", function(uniqueID, id, price, p
 	if balance >= price then
 		--xPlayer.removeAccountMoney('bank', price) -- Bank
 		xPlayer.removeMoney(price) --Cash
-		storeTicket(xPlayer.identifier, uniqueID, id, pickedNums)
+		storeTicket(xPlayer.identifier, uniqueID, id, pickedNums, date, time)
 	else
 		--TriggerClientEvent("s1lent_lottery:notEnoughMoney", src) -- Bank
 		TriggerClientEvent("s1lent_lottery:notEnoughCash", src) -- Cash
 	end
 end)
 
-function storeTicket(identifier, uniqueID, id, nums)
+function storeTicket(identifier, uniqueID, id, nums, date, time)
 	MySQL.ready(function()
-		MySQL.Async.execute('INSERT INTO lottery_tickets (identifier, drawingUniqueID, drawingID, numbers) VALUES (@identifier, @drawingUniqueID, @drawingID, @numbers)', --Create next drawing
+		MySQL.Async.execute('INSERT INTO lottery_tickets (identifier, drawingUniqueID, drawingID, numbers, drawDate, drawTime) VALUES (@identifier, @drawingUniqueID, @drawingID, @numbers, @drawDate, @drawTime)',
 		{
 			['@identifier'] = identifier,
 			['@drawingUniqueID'] = uniqueID,
 			['@drawingID'] = id,
-			['@numbers'] = nums
+			['@numbers'] = nums,
+			['@drawDate'] = date,
+			['@drawTime'] = time
 		}, function(rowsChanged) end)
 	end)
 end
@@ -510,9 +529,46 @@ AddEventHandler("s1lent_lottery:redeemTickets", function()
 				prizeTotal = prizeTotal + results[i].prize
 				deleteTicket(results[i].id)
 			end
-			--xPlayer.addAccountMoney('bank', prizeTotal) -- Bank
-			xPlayer.addMoney(prizeTotal) -- Cash
+			if #results > 0 then
+				--xPlayer.addAccountMoney('bank', prizeTotal) -- Bank
+				xPlayer.addMoney(prizeTotal) -- Cash
+			else
+				prizeTotal = -1;
+			end
 			TriggerClientEvent("s1lent_lottery:ticketsRedeemed", src, prizeTotal)
+		end)
+	end)
+end)
+
+ESX.RegisterServerCallback('s1lent_lottery:updatePlayerTicketList', function(source, cb)  
+	local src = source
+	local xPlayer = ESX.GetPlayerFromId(src)
+	local identifier = xPlayer.identifier
+	MySQL.ready(function()
+		MySQL.Async.fetchAll('SELECT * FROM lottery_tickets WHERE identifier = @identifier', 
+		{	
+			['@identifier'] = identifier
+		}, 
+		function(results)
+			local ticketList = {}
+			for i = 1, #results, 1 do
+				ticketList[i] = {}
+				local drawing = getDrawingFromUniqueID(results[i].drawingUniqueID)
+				ticketList[i][1] = drawing.name
+				ticketList[i][2] = results[i].drawDate
+				ticketList[i][3] = results[i].drawTime
+				ticketList[i][4] = results[i].numbers
+
+				local prize = results[i].prize
+				if prize == -1 then
+					prize = ""
+				else
+					prize = "$" .. prize
+				end
+
+				ticketList[i][5] = prize
+			end
+			cb(ticketList)
 		end)
 	end)
 end)

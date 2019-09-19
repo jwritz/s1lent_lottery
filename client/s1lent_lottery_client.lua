@@ -1,6 +1,7 @@
 local isNear = false
 local isInMenu = false
 local lotteryList = nil
+local playerTicketList = nil
 
 function enableUI()
 	local uiReady = false
@@ -113,14 +114,33 @@ RegisterNUICallback("s1lent_lottery:buy", function(data)
 	local id = data.id
 	local price = tonumber(data.price)
 	local nums = table.concat(data.pickedNums, "-")
-	print("Ticket Info: uniqueID: " .. uniqueID .. ", id: " .. id .. ", price: " .. price .. ", nums : " .. nums)
-	TriggerServerEvent("s1lent_lottery:purchaseTicket", uniqueID, id, price, nums)
-	
+	local date = data.date
+	local time = data.time
+	--print("Ticket Info: uniqueID: " .. uniqueID .. ", id: " .. id .. ", price: " .. price .. ", nums : " .. nums .. " " .. date .. "" .. time) --DEBUG
+	TriggerServerEvent("s1lent_lottery:purchaseTicket", uniqueID, id, price, nums, date, time)
+	playerTicketList = nil
 	ESX.ShowNotification("~g~Good luck!")
+end)
+
+RegisterNUICallback("s1lent_lottery:getTicketList", function()
+	if playerTicketList == nil then
+		ESX.TriggerServerCallback('s1lent_lottery:updatePlayerTicketList', function(data)
+			playerTicketList = data
+		end)
+
+		while playerTicketList == nil do
+			Citizen.Wait(1)
+		end
+	end
+	SendNUIMessage({
+		type = "getTicketList",
+		ticketList = playerTicketList
+	})
 end)
 
 RegisterNUICallback("s1lent_lottery:redeem", function(data)
 	TriggerServerEvent("s1lent_lottery:redeemTickets")
+	playerTicketList = nil
 end)
 
 RegisterNUICallback("s1lent_lottery:close", function(data)
@@ -131,8 +151,11 @@ RegisterNetEvent("s1lent_lottery:ticketsRedeemed")
 AddEventHandler("s1lent_lottery:ticketsRedeemed", function(amt)
 	if amt > 0 then
 		ESX.ShowNotification("~w~You won ~g~ $" .. amt .. " ~w~ from your lottery tickets!")
+	else if amt == -1 then
+		ESX.ShowNotification("~w~You do not have any tickets able to be redeemed.")
 	else
 		ESX.ShowNotification("~w~You did not win any money this time. Better luck next time!")
+	end 
 	end
 end)
 

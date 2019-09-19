@@ -9,7 +9,6 @@
         <div id="container">
             <div style="width:100%;">
                 <h1 id="lotteryTitle">LS Lottery<button id="close" onclick="closeLottery()">X</button></h1>
-            
             </div>
 
             <div id="mainPage">
@@ -26,7 +25,7 @@
                         <td>
                             <button class="selectBtn" onclick="toggleLottery()">Select</button>
                         </td>
-                    </tr>
+                    </tr>   
                     <!-- <tr>
                         <td>
                             <label for="scratchOffSelect">Scratch Off</label>
@@ -43,15 +42,18 @@
                     </tr> -->
                 </table>
                 <div id="bottomBar" style="width: 100%; position: absolute; bottom:1rem;">
-                    <button style="float:right;margin-right:10%;" onclick="redeemTickets()">Redeem</button>
+                    <button style="float:right;margin-right:10%;" onclick="showMyTickets()">My Tickets</button>
                 </div>
             </div>
 
-            <div id="lotteryPage" style="text-align: center; display: none;">
+            <div id="lotteryPage" style="text-align: center; display: none; position: relative;">
                 <h2 id="lotteryPageName">
                     Lottery Name
                 </h2>
-                <div id="lotteryInfo">Date/Time: <span id="lotteryPageDateTime"></span><br>Cost: $<span id="lotteryPageCost"></span><br>Choose <span id="lotteryPageNum"></span> numbers. </div>
+                <div id="lotteryInfo" style="position:relative;">
+                    <div style="display:inline-block;">Date/Time: <span id="lotteryPageDateTime"></span><br>Cost: $<span id="lotteryPageCost"></span><br>Choose <span id="lotteryPageNum"></span> numbers. </div>
+                    <div id="prizeBtn" style="display:inline-block;position:absolute;top:25%;margin-left:20px;background-color:lightgray;padding:5px;border-radius:5px;">Prize List</div>
+                </div>
 
                 <div id="numberContainer">
                     
@@ -61,6 +63,28 @@
                     <button style="float: right; margin-right: 10%;" onclick="buy()">
                         Buy
                     </button>
+                </div>
+                <div id="prizeList">
+                    <div style="margin-bottom: 10px;"><b><u>Prizes</u></b></div>
+                    <div id="prizes"></div>
+                </div>
+                
+            </div>
+
+            <div id="myTicketsPage" style="text-align: center; display: none; position: relative; height: 84%;">
+                <h2 id="myTicketsPageName">
+                    My Tickets
+                </h2>
+
+                <div id="myTickets" style=" max-height:300px; overflow-y: scroll;">
+                    <table id="myTicketTable" style="margin:auto;">
+                        <tr><th style="width:75px;">Drawing</th><th>Date</th><th>Time</th><th>My Numbers</th><th>Prize</th></tr>
+                   </table>
+                </div>
+
+                <div id="bottomBar" style="width: 100%; position: absolute; bottom:1rem;">
+                    <button style="float: left; margin-left: 10%;" onclick="showHome()">Back</button>
+                    <button style="float: right; margin-right:10%;" onclick="redeemTickets()">Redeem</button>
                 </div>
             </div>
 
