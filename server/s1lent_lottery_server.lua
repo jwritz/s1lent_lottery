@@ -419,16 +419,6 @@ function getNextDrawingInfo(uniqueID)
 	return id, date
 end
 
-function announceDrawing(drawingName)
-	local announcement = drawingName .. " was just drawn. Come down to the LS Lottery Office to see if you won!"
-
-	TriggerEvent("chat:message", {
-		color = {28, 176, 33},
-		multiline = true,
-		args = {"LS Lottery", announcement}
-	})
-end
-
 ESX.RegisterServerCallback('s1lent_lottery:getLotteryList', function(source, cb)
 	MySQL.ready(function()
 		MySQL.Async.fetchAll('SELECT * FROM lottery_drawings WHERE numbers IS NULL', {}, 
