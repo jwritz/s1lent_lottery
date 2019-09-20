@@ -277,9 +277,9 @@ function updateTicketTable(){
         var drawTime = ticketList[i][2];
         var pickedNumbers = ticketList[i][3];
         var ticketPrize = ticketList[i][4];
-        var rowColor = "#c4ffbc";
+        var rowColor = "rgba(237, 97, 30, 0.4)";
         if (ticketPrize == ""){
-            rowColor = "#a5c89e";
+           rowColor = "rgba(0, 0, 0, 0)";
         }
 
         ticketTable.append("<tr style='background-color:"+rowColor+"'><td>"+drawingName+"</td><td>"+drawDate+"</td><td>"+drawTime+"</td><td>"+pickedNumbers+"</td><td>"+ticketPrize+"</td></tr>");
