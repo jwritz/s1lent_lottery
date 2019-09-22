@@ -429,7 +429,7 @@ function getPoolPrize(drawing, numNumbers)
 			prizeAmts = {}
 			local pool = results[1]['pool']
 			for i = 1, numNumbers, 1 do
-				prizeAmts[i] = pool * (Config.LotteryPrizes[drawing.prizePercents][i]/100)
+				prizeAmts[i] = (pool * (drawing.value/100)) * (Config.LotteryPrizes[drawing.prizePercents][i]/100)
 			end
 		end)
 	end)
