@@ -177,6 +177,8 @@ function checkDrawings(index, hr, m) --index - sun = 1, mon = 2 ... sat = 7
 			insertDrawing(drawing.uniqueID, nextID, nextDate, drawing.prize, drawing.startValue)
 			updateTickets(drawing, nextID - 1, nums)
 
+			print("[s1lent_lottery] " .. drawing.name .. " drawn: " .. table.concat(nums, '-')) --OPTIONAL (Displays numbers when lottery is drawn)
+
 			if i > lastDraw then
 				lastDraw = i
 			end
@@ -665,7 +667,7 @@ Citizen.CreateThread(function()
 		lastDraw = checkDrawings(curDate.wday, curDate.hour, curDate.min)
 		--print("Last Draw: " .. lastDraw) --DEBUG
 		timeUntilNext = getTimeUntilNextDrawing(curDate.wday, curDate.hour, curDate.min, lastDraw)--does not check other days? / more than once?
-		--print("Waiting for " .. timeUntilNext .. " minute(s)") --DEBUG
+		print("[s1lent_lottery] Waiting for " .. timeUntilNext .. " minute(s)") --OPTIONAL
 		Citizen.Wait(timeUntilNext * 60000)
 		--print("Done waiting") --DEBUG
 	end
