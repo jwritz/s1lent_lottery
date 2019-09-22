@@ -24,7 +24,7 @@ Config.DailyDBTime = 7 -- Amount of time (days) weekly (ex: frequency = "mon") d
 Config.LotteryPrizes = {
 	[1] = {5, 10, 25, 35, 100}, -- (DEFAULT) Percent of prize per matched num (ex: 1 match = 5% of prize value, 4 matches = 35%) There MUST be same numbers of percentages as there are number of numbers
 	[2] = {25, 100},
-	[3] = {0, 0, 10, 30, 100}
+	[3] = {0, 5, 10, 30, 100}
 }
 
 Config.lotteries = {--See GitHub Wiki for more information on creating lotteries
