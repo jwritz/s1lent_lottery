@@ -670,7 +670,7 @@ Citizen.CreateThread(function()
 		--print("Current Time: " .. curDate.wday .. " - " .. curDate.hour .. ":" .. curDate.min) --DEBUG 
 		lastDraw = checkDrawings(curDate.wday, curDate.hour, curDate.min)
 		--print("Last Draw: " .. lastDraw) --DEBUG
-		timeUntilNext = getTimeUntilNextDrawing(curDate.wday, curDate.hour, curDate.min, lastDraw)--does not check other days? / more than once?
+		timeUntilNext = getTimeUntilNextDrawing(curDate.wday, curDate.hour, curDate.min, lastDraw)
 		print("[s1lent_lottery] Waiting for " .. timeUntilNext .. " minute(s)") --OPTIONAL
 		Citizen.Wait(timeUntilNext * 60000)
 		--print("Done waiting") --DEBUG
