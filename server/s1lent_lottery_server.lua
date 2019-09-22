@@ -177,8 +177,6 @@ function checkDrawings(index, hr, m) --index - sun = 1, mon = 2 ... sat = 7
 			insertDrawing(drawing.uniqueID, nextID, nextDate)
 			updateTickets(drawing, nextID - 1, nums)
 
-			announceDrawing(drawing.name)
-
 			if i > lastDraw then
 				lastDraw = i
 			end
