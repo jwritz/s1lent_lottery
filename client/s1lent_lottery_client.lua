@@ -35,6 +35,7 @@ function disableUI()
 	})
 	SetNuiFocus(false, false)
 	isInMenu = false
+	lotteryList = nil
 end
 
 --ESX

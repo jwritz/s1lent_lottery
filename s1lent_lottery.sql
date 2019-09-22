@@ -4,7 +4,8 @@ CREATE TABLE `lottery_drawings` (
 	`uniqueID` VARCHAR(255) NOT NULL,
 	`id` INT(11) NOT NULL,
 	`date` VARCHAR(50) NOT NULL,
-	`numbers` VARCHAR(50) NULL DEFAULT NULL
+	`numbers` VARCHAR(50) NULL DEFAULT NULL,
+	`pool` INT(11) NULL DEFAULT NULL
 );
 
 CREATE TABLE `lottery_tickets` (

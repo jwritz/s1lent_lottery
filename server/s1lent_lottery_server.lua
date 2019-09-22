@@ -163,7 +163,11 @@ function getTimeUntilNextDrawing(index, hr, m, lastDraw)
 		return getTimeDif(index, hr, m, drawTable[index + i][1], index + i)
 	end
 
-	return getTimeDif(index, hr, m, drawTable[index][lastDraw + 1], index)
+	local time = getTimeDif(index, hr, m, drawTable[index][lastDraw + 1], index)
+	if time < 0 then
+		time = getTimeUntilNextDrawing(index, hr, m, 1)
+	end
+	return time
 end
 
 function checkDrawings(index, hr, m) --index - sun = 1, mon = 2 ... sat = 7
@@ -174,10 +178,10 @@ function checkDrawings(index, hr, m) --index - sun = 1, mon = 2 ... sat = 7
 
 			local nextID, nextDate = getNextDrawingInfo(drawing.uniqueID)
 			updateDrawing(drawing.uniqueID, nextID - 1, nums)
-			insertDrawing(drawing.uniqueID, nextID, nextDate)
+			insertDrawing(drawing.uniqueID, nextID, nextDate, drawing.prize, drawing.startValue)
 			updateTickets(drawing, nextID - 1, nums)
 
-			announceDrawing(drawing.name)
+			print("[s1lent_lottery] " .. drawing.name .. " drawn: " .. table.concat(nums, '-')) --OPTIONAL (Displays numbers when lottery is drawn)
 
 			if i > lastDraw then
 				lastDraw = i
@@ -198,18 +202,31 @@ function updateDrawing(uniqueID, id, numbers)
 	end)
 end
 
-function insertDrawing(uniqueID, id, date)
-	MySQL.ready(function()
-		MySQL.Async.execute('INSERT INTO lottery_drawings (uniqueID, id, date) VALUES (@uniqueID, @id, @date)', --Create next drawing
-		{
-			['@uniqueID'] = uniqueID,
-			['@id'] = id,
-			['@date'] = date,
-		}, function(rowsChanged) end)
-	end)
+function insertDrawing(uniqueID, id, date, prize, startValue)
+	if prize == "pool" then
+		MySQL.ready(function()
+			MySQL.Async.execute('INSERT INTO lottery_drawings (uniqueID, id, date, pool) VALUES (@uniqueID, @id, @date, @pool)', --Create next drawing
+			{
+				['@uniqueID'] = uniqueID,
+				['@id'] = id,
+				['@date'] = date,
+				['@pool'] = startValue
+			}, function(rowsChanged) end)
+		end)
+	else
+		MySQL.ready(function()
+			MySQL.Async.execute('INSERT INTO lottery_drawings (uniqueID, id, date) VALUES (@uniqueID, @id, @date)', --Create next drawing
+			{
+				['@uniqueID'] = uniqueID,
+				['@id'] = id,
+				['@date'] = date
+			}, function(rowsChanged) end)
+		end)
+	end
 end
 
-function calcPrize(nums, prizePercents, pickedNums, prize)
+--function calcPrize(nums, prizePercents, pickedNums, value, prize)
+function calcPrize(nums, drawing, pickedNums, drawingID)
 	local pNums = {}
 	local i = string.find(pickedNums, "-")
 	local x = 1
@@ -234,7 +251,11 @@ function calcPrize(nums, prizePercents, pickedNums, prize)
 	if matches == 0 then
 		return 0
 	end
-	return math.floor(prize * (prizePercents[matches] / 100))
+	if drawing.prize == "pool" then
+		return getPoolPrize(drawing, #pNums, drawingID)[matches]
+	else -- prize == "amt" 
+		return math.floor((drawing.value * (Config.LotteryPrizes[drawing.prizePercents][matches] / 100)) + 0.5)
+	end
 end
 
 function updateTickets(drawing, drawingID, nums)
@@ -253,7 +274,8 @@ function updateTickets(drawing, drawingID, nums)
 				updated = false
 				pickedNums = results[i].numbers
 				id = results[i].id
-				prize = calcPrize(nums, Config.LotteryPrizes[drawing.prizePercents], pickedNums, drawing.value)
+				--prize = calcPrize(nums, Config.LotteryPrizes[drawing.prizePercents], pickedNums, drawing.value, drawing.prize)
+				prize = calcPrize(nums, drawing, pickedNums, drawingID)
 				MySQL.Async.execute('UPDATE lottery_tickets SET isDrawn = @isDrawn, prize = @prize WHERE id = @id', 
 				{
 					['@isDrawn'] = 1,
@@ -419,14 +441,29 @@ function getNextDrawingInfo(uniqueID)
 	return id, date
 end
 
-function announceDrawing(drawingName)
-	local announcement = drawingName .. " was just drawn. Come down to the LS Lottery Office to see if you won!"
+function getPoolPrize(drawing, numNumbers, drawingID)
+	local prizeAmts = nil
 
-	TriggerEvent("chat:message", {
-		color = {28, 176, 33},
-		multiline = true,
-		args = {"LS Lottery", announcement}
-	})
+	MySQL.ready(function()
+		MySQL.Async.fetchAll('SELECT * FROM lottery_drawings WHERE uniqueID = @uniqueID and id = @id',
+		{
+			['uniqueID'] = drawing.uniqueID,
+			['id'] = drawingID
+		}, 
+		function(results)
+			prizeAmts = {}
+			local pool = results[1]['pool']
+			for i = 1, numNumbers, 1 do
+				prizeAmts[i] = math.floor((pool * (drawing.value/100)) * (Config.LotteryPrizes[drawing.prizePercents][i]/100) + 0.5)
+			end
+		end)
+	end)
+
+	while prizeAmts == nil do
+		Citizen.Wait(5)
+	end
+
+	return prizeAmts
 end
 
 ESX.RegisterServerCallback('s1lent_lottery:getLotteryList', function(source, cb)
@@ -470,8 +507,15 @@ ESX.RegisterServerCallback('s1lent_lottery:getLotteryList', function(source, cb)
 				lotteryList[i][9] = range[2]
 
 				lotteryList[i][10] = {}
-				for j = 1, numNumbers, 1 do
-					lotteryList[i][10][j] = drawing.value * (Config.LotteryPrizes[drawing.prizePercents][j]/100)
+				if drawing.prize == "pool" then
+					lotteryList[i][10] = getPoolPrize(drawing, numNumbers, results[i].id)
+					while lotteryList[i][10] == {} do
+						Citizen.Wait(5)
+					end
+				else -- drawing.prize == "amt"
+					for j = 1, numNumbers, 1 do
+						lotteryList[i][10][j] = drawing.value * (Config.LotteryPrizes[drawing.prizePercents][j]/100)
+					end
 				end
 			end
 			cb(lotteryList)
@@ -490,12 +534,27 @@ AddEventHandler("s1lent_lottery:purchaseTicket", function(uniqueID, id, price, p
 	if balance >= price then
 		--xPlayer.removeAccountMoney('bank', price) -- Bank
 		xPlayer.removeMoney(price) --Cash
+		addToPool(uniqueID, id, price)
 		storeTicket(xPlayer.identifier, uniqueID, id, pickedNums, date, time)
 	else
 		--TriggerClientEvent("s1lent_lottery:notEnoughMoney", src) -- Bank
 		TriggerClientEvent("s1lent_lottery:notEnoughCash", src) -- Cash
 	end
 end)
+
+function addToPool(uniqueID, id, amt)
+	local drawing = getDrawingFromUniqueID(uniqueID)
+	if drawing.prize == "pool" then
+		MySQL.Async.execute('UPDATE lottery_drawings SET pool = pool + @pool WHERE id = @id and uniqueID = @uniqueID',
+			{
+				['@pool'] = amt,
+				['@id'] = id,
+				['@uniqueID'] = uniqueID
+			}, function(rowsChanged) 
+			end
+		)
+	end
+end
 
 function storeTicket(identifier, uniqueID, id, nums, date, time)
 	MySQL.ready(function()
@@ -611,8 +670,8 @@ Citizen.CreateThread(function()
 		--print("Current Time: " .. curDate.wday .. " - " .. curDate.hour .. ":" .. curDate.min) --DEBUG 
 		lastDraw = checkDrawings(curDate.wday, curDate.hour, curDate.min)
 		--print("Last Draw: " .. lastDraw) --DEBUG
-		timeUntilNext = getTimeUntilNextDrawing(curDate.wday, curDate.hour, curDate.min, lastDraw)--does not check other days? / more than once?
-		--print("Waiting for " .. timeUntilNext .. " minute(s)") --DEBUG
+		timeUntilNext = getTimeUntilNextDrawing(curDate.wday, curDate.hour, curDate.min, lastDraw)
+		print("[s1lent_lottery] Waiting for " .. timeUntilNext .. " minute(s)") --OPTIONAL
 		Citizen.Wait(timeUntilNext * 60000)
 		--print("Done waiting") --DEBUG
 	end
