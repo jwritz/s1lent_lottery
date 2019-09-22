@@ -419,6 +419,30 @@ function getNextDrawingInfo(uniqueID)
 	return id, date
 end
 
+function getPoolPrize(drawing, numNumbers)
+	local prizeAmts = nil
+
+	MySQL.ready(function()
+		MySQL.Async.fetchAll('SELECT * FROM lottery_drawings WHERE uniqueID = @uniqueID ORDER BY id DESC LIMIT 1',
+		{
+			['uniqueID'] = drawing.uniqueID
+		}, 
+		function(results)
+			prizeAmts = {}
+			local pool = results[1]['pool']
+			for i = 1, numNumbers, 1 do
+				prizeAmts[i] = pool * (Config.LotteryPrizes[drawing.prizePercents][i]/100)
+			end
+		end)
+	end)
+
+	while prizeAmts == nil do
+		Citizen.Wait(5)
+	end
+
+	return prizeAmts
+end
+
 ESX.RegisterServerCallback('s1lent_lottery:getLotteryList', function(source, cb)
 	MySQL.ready(function()
 		MySQL.Async.fetchAll('SELECT * FROM lottery_drawings WHERE numbers IS NULL', {}, 
@@ -460,8 +484,15 @@ ESX.RegisterServerCallback('s1lent_lottery:getLotteryList', function(source, cb)
 				lotteryList[i][9] = range[2]
 
 				lotteryList[i][10] = {}
-				for j = 1, numNumbers, 1 do
-					lotteryList[i][10][j] = drawing.value * (Config.LotteryPrizes[drawing.prizePercents][j]/100)
+				if drawing.prize == "pool" then
+					lotteryList[i][10] = getPoolPrize(drawing, numNumbers)
+					while lotteryList[i][10] == {} do
+						Citizen.Wait(5)
+					end
+				else -- drawing.prize == "amt"
+					for j = 1, numNumbers, 1 do
+						lotteryList[i][10][j] = drawing.value * (Config.LotteryPrizes[drawing.prizePercents][j]/100)
+					end
 				end
 			end
 			cb(lotteryList)
@@ -480,12 +511,27 @@ AddEventHandler("s1lent_lottery:purchaseTicket", function(uniqueID, id, price, p
 	if balance >= price then
 		--xPlayer.removeAccountMoney('bank', price) -- Bank
 		xPlayer.removeMoney(price) --Cash
+		addToPool(uniqueID, id, price)
 		storeTicket(xPlayer.identifier, uniqueID, id, pickedNums, date, time)
 	else
 		--TriggerClientEvent("s1lent_lottery:notEnoughMoney", src) -- Bank
 		TriggerClientEvent("s1lent_lottery:notEnoughCash", src) -- Cash
 	end
 end)
+
+function addToPool(uniqueID, id, amt)
+	local drawing = getDrawingFromUniqueID(uniqueID)
+	if drawing.prize == "pool" then
+		MySQL.Async.execute('UPDATE lottery_drawings SET pool = pool + @pool WHERE id = @id and uniqueID = @uniqueID',
+			{
+				['@pool'] = amt,
+				['@id'] = id,
+				['@uniqueID'] = uniqueID
+			}, function(rowsChanged) 
+			end
+		)
+	end
+end
 
 function storeTicket(identifier, uniqueID, id, nums, date, time)
 	MySQL.ready(function()
