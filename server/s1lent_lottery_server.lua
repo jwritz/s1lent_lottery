@@ -174,7 +174,7 @@ function checkDrawings(index, hr, m) --index - sun = 1, mon = 2 ... sat = 7
 
 			local nextID, nextDate = getNextDrawingInfo(drawing.uniqueID)
 			updateDrawing(drawing.uniqueID, nextID - 1, nums)
-			insertDrawing(drawing.uniqueID, nextID, nextDate)
+			insertDrawing(drawing.uniqueID, nextID, nextDate, drawing.prize, drawing.startValue)
 			updateTickets(drawing, nextID - 1, nums)
 
 			if i > lastDraw then
@@ -196,18 +196,31 @@ function updateDrawing(uniqueID, id, numbers)
 	end)
 end
 
-function insertDrawing(uniqueID, id, date)
-	MySQL.ready(function()
-		MySQL.Async.execute('INSERT INTO lottery_drawings (uniqueID, id, date) VALUES (@uniqueID, @id, @date)', --Create next drawing
-		{
-			['@uniqueID'] = uniqueID,
-			['@id'] = id,
-			['@date'] = date,
-		}, function(rowsChanged) end)
-	end)
+function insertDrawing(uniqueID, id, date, prize, startValue)
+	if prize == "pool" then
+		MySQL.ready(function()
+			MySQL.Async.execute('INSERT INTO lottery_drawings (uniqueID, id, date, pool) VALUES (@uniqueID, @id, @date, @pool)', --Create next drawing
+			{
+				['@uniqueID'] = uniqueID,
+				['@id'] = id,
+				['@date'] = date,
+				['@pool'] = startValue
+			}, function(rowsChanged) end)
+		end)
+	else
+		MySQL.ready(function()
+			MySQL.Async.execute('INSERT INTO lottery_drawings (uniqueID, id, date) VALUES (@uniqueID, @id, @date)', --Create next drawing
+			{
+				['@uniqueID'] = uniqueID,
+				['@id'] = id,
+				['@date'] = date
+			}, function(rowsChanged) end)
+		end)
+	end
 end
 
-function calcPrize(nums, prizePercents, pickedNums, prize)
+--function calcPrize(nums, prizePercents, pickedNums, value, prize)
+function calcPrize(nums, drawing, pickedNums, drawingID)
 	local pNums = {}
 	local i = string.find(pickedNums, "-")
 	local x = 1
@@ -232,7 +245,11 @@ function calcPrize(nums, prizePercents, pickedNums, prize)
 	if matches == 0 then
 		return 0
 	end
-	return math.floor(prize * (prizePercents[matches] / 100))
+	if drawing.prize == "pool" then
+		return getPoolPrize(drawing, #pNums, drawingID)[matches]
+	else -- prize == "amt" 
+		return math.floor((drawing.value * (Config.LotteryPrizes[drawing.prizePercents][matches] / 100)) + 0.5)
+	end
 end
 
 function updateTickets(drawing, drawingID, nums)
@@ -251,7 +268,8 @@ function updateTickets(drawing, drawingID, nums)
 				updated = false
 				pickedNums = results[i].numbers
 				id = results[i].id
-				prize = calcPrize(nums, Config.LotteryPrizes[drawing.prizePercents], pickedNums, drawing.value)
+				--prize = calcPrize(nums, Config.LotteryPrizes[drawing.prizePercents], pickedNums, drawing.value, drawing.prize)
+				prize = calcPrize(nums, drawing, pickedNums, drawingID)
 				MySQL.Async.execute('UPDATE lottery_tickets SET isDrawn = @isDrawn, prize = @prize WHERE id = @id', 
 				{
 					['@isDrawn'] = 1,
@@ -417,13 +435,14 @@ function getNextDrawingInfo(uniqueID)
 	return id, date
 end
 
-function getPoolPrize(drawing, numNumbers)
+function getPoolPrize(drawing, numNumbers, drawingID)
 	local prizeAmts = nil
 
 	MySQL.ready(function()
-		MySQL.Async.fetchAll('SELECT * FROM lottery_drawings WHERE uniqueID = @uniqueID ORDER BY id DESC LIMIT 1',
+		MySQL.Async.fetchAll('SELECT * FROM lottery_drawings WHERE uniqueID = @uniqueID and id = @id',
 		{
-			['uniqueID'] = drawing.uniqueID
+			['uniqueID'] = drawing.uniqueID,
+			['id'] = drawingID
 		}, 
 		function(results)
 			prizeAmts = {}
@@ -483,7 +502,7 @@ ESX.RegisterServerCallback('s1lent_lottery:getLotteryList', function(source, cb)
 
 				lotteryList[i][10] = {}
 				if drawing.prize == "pool" then
-					lotteryList[i][10] = getPoolPrize(drawing, numNumbers)
+					lotteryList[i][10] = getPoolPrize(drawing, numNumbers, results[i].id)
 					while lotteryList[i][10] == {} do
 						Citizen.Wait(5)
 					end
