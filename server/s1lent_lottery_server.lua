@@ -163,7 +163,11 @@ function getTimeUntilNextDrawing(index, hr, m, lastDraw)
 		return getTimeDif(index, hr, m, drawTable[index + i][1], index + i)
 	end
 
-	return getTimeDif(index, hr, m, drawTable[index][lastDraw + 1], index)
+	local time = getTimeDif(index, hr, m, drawTable[index][lastDraw + 1], index)
+	if time < 0 then
+		time = getTimeUntilNextDrawing(index, hr, m, 1)
+	end
+	return time
 end
 
 function checkDrawings(index, hr, m) --index - sun = 1, mon = 2 ... sat = 7
