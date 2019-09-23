@@ -1,4 +1,4 @@
---VERSION: 1.0.4
+--VERSION: 1.0.5
 --GITHUB: https://github.com/jwritz/s1lent_lottery
 Config = {}
 Config.Locale = 'en'
