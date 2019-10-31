@@ -95,7 +95,7 @@ Citizen.CreateThread(function()
 		Citizen.Wait(0)
 		if isNear and not isInMenu then
 			BeginTextCommandDisplayHelp("STRING")
-			AddTextComponentSubstringPlayerName("Press ~INPUT_PICKUP~ to open lottery store")
+			AddTextComponentSubstringPlayerName(_U('open_store'))
 			EndTextCommandDisplayHelp(0, false, true, 1000)
 			
 			if IsControlJustReleased(0, 38) then --38 = INPUT_PICKUP (default is 'E')
@@ -151,21 +151,21 @@ end)
 RegisterNetEvent("s1lent_lottery:ticketsRedeemed")
 AddEventHandler("s1lent_lottery:ticketsRedeemed", function(amt)
 	if amt > 0 then
-		ESX.ShowNotification("~w~You won ~g~ $" .. amt .. " ~w~ from your lottery tickets!")
+		ESX.ShowNotification(_U('winning',amt))
 	else if amt == -1 then
-		ESX.ShowNotification("~w~You do not have any tickets able to be redeemed.")
+		ESX.ShowNotification(_U('no_tickets'))
 	else
-		ESX.ShowNotification("~w~You did not win any money this time. Better luck next time!")
+		ESX.ShowNotification(_U('no_win'))
 	end 
 	end
 end)
 
 RegisterNetEvent("s1lent_lottery:notEnoughMoney")
 AddEventHandler("s1lent_lottery:notEnoughMoney", function()
-	ESX.ShowNotification("~r~You do not have enough money in your bank to purchase this ticket")
+	ESX.ShowNotification(_U('not_enough_bank'))
 end)
 
 RegisterNetEvent("s1lent_lottery:notEnoughCash")
 AddEventHandler("s1lent_lottery:notEnoughCash", function()
-	ESX.ShowNotification("~r~You do not have enough cash to purchase this ticket")
+	ESX.ShowNotification(_U('not_enough_cash'))
 end)

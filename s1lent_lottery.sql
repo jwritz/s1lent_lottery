@@ -1,5 +1,7 @@
+-- Make sure you change this is your database is called differently
 USE `essentialmode`;
 
+-- Create the Drawings table
 CREATE TABLE `lottery_drawings` (
 	`uniqueID` VARCHAR(255) NOT NULL,
 	`id` INT(11) NOT NULL,
@@ -7,7 +9,7 @@ CREATE TABLE `lottery_drawings` (
 	`numbers` VARCHAR(50) NULL DEFAULT NULL,
 	`pool` INT(11) NULL DEFAULT NULL
 );
-
+-- Create the Tickets table
 CREATE TABLE `lottery_tickets` (
 	`id` INT(11) NOT NULL AUTO_INCREMENT,
 	`identifier` VARCHAR(50) NOT NULL,
