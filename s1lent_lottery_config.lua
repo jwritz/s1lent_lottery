@@ -5,22 +5,11 @@ Config = {}
 Config.Locale = 'en'
 
 Config.Blips = {
-    {
-        title = "Lottery",
-        color = 69,
-        id = 587,
-        x = 877.38,
-        y = -132.59,
-        z = 78.73
-    }
+    {title = "Lottery", color = 69, id = 587, x = 877.38, y = -132.59, z = 78.73}
 }
 
 Config.MarkerZones = {
-    {
-        markerType = 29, x = 877.38, y = -132.59, z = 78.73,
-        zoneSize = {x = 2.0, y = 2.0, z = 2.0},
-        color = {r = 21, g = 214, b = 34}
-    }
+    {markerType = 29, x = 877.38, y = -132.59, z = 78.73, zoneSize = {x = 2.0, y = 2.0, z = 2.0}, color = {r = 21, g = 214, b = 34}}
 }
 
 Config.DrawDistance = 200.0
@@ -39,7 +28,7 @@ Config.LotteryPrizes = {
     [3] = {0, 5, 10, 30, 100}
 }
 
-Config.lotteries = {--See GitHub Wiki for more information on creating lotteries
+Config.lotteries = {--See GitHub Wiki for more information on creating lotteries and other customizations
     {name = "Daily Lotto", uniqueID ="daily_lotto" , frequency = "daily", drawTimeHr = 12, drawTimeMin = 00, ticketCost = 10, prize = "amt", value = 100, range = {0, 10}, numNumbers = 2, prizePercents = 2},
     {name = "Monday Lotto", uniqueID ="monday_lotto" , frequency = "mon", drawTimeHr = 18, drawTimeMin = 00, ticketCost = 100, prize = "amt", value = 1500, prizePercents = 1},
     {name = "Friday Lotto", uniqueID ="friday_lotto" , frequency = "fri", drawTimeHr = 18, drawTimeMin = 00, ticketCost = 100, prize = "amt", value = 1500, prizePercents = 1},
