@@ -1,5 +1,4 @@
--- Make sure you change this is your database is called differently
-USE `essentialmode`;
+USE `essentialmode`; -- Make sure you change this is your database is called differently
 
 -- Create the Drawings table
 CREATE TABLE `lottery_drawings` (
@@ -23,6 +22,7 @@ CREATE TABLE `lottery_tickets` (
 	PRIMARY KEY (`id`)
 );
 
-INSERT INTO lottery_drawings (uniqueID, id, date) VALUES ('daily_lotto', 0, '9\/20\/2019');
-INSERT INTO lottery_drawings (uniqueID, id, date) VALUES ('monday_lotto', 0, '9\/23\/2019');
-INSERT INTO lottery_drawings (uniqueID, id, date) VALUES ('friday_lotto', 0, '9\/19\/2019');
+INSERT INTO lottery_drawings (uniqueID, id, date) VALUES ('daily_lotto', 0, '11\/1\/2019');
+INSERT INTO lottery_drawings (uniqueID, id, date) VALUES ('monday_lotto', 0, '11\/4\/2019');
+INSERT INTO lottery_drawings (uniqueID, id, date) VALUES ('friday_lotto', 0, '11\/1\/2019');
+INSERT INTO lottery_drawings (uniqueID, id, date, pool) VALUES ('wednesday_pool_lotto', 0, '11\/6\/2019', 500);
