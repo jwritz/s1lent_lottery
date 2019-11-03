@@ -225,7 +225,6 @@ function insertDrawing(uniqueID, id, date, prize, startValue)
 	end
 end
 
---function calcPrize(nums, prizePercents, pickedNums, value, prize)
 function calcPrize(nums, drawing, pickedNums, drawingID)
 	local pNums = {}
 	local i = string.find(pickedNums, "-")
