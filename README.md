@@ -1,5 +1,7 @@
 # s1lent_lottery
 
+**NOTE:** I want to completely redo this script due to some instability that users have experienced. Until then be aware that bugs may be present.
+
 ## Features
 * Automatic scheduled drawings 
 * UI for purchasing lottery tickets
